@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:menu/pages/restaurant_page.dart';
+import 'package:menu/widgets/restaurant_page.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../models/restaurant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
