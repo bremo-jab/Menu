@@ -6,6 +6,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MenuApp());
+  int x = 0;
 }
 
 class MenuApp extends StatelessWidget {
