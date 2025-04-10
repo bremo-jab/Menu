@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:menu/models/restaurant.dart';
-import 'package:menu/pages/category_items_page.dart';
-
+import 'package:menu/widgets/icon_row.dart';
+import '../widgets/category_card.dart';  // تم إضافته أيضًا
 class RestaurantPage extends StatelessWidget {
   final Restaurant restaurant;
 
@@ -38,7 +38,7 @@ class RestaurantPage extends StatelessWidget {
             ),
           ),
 
-          // عرض الأصناف داخل GridView
+          // عرض الأصناف داخل GridView باستخدام CategoryCard
           Expanded(
             child: GridView.builder(
               padding: EdgeInsets.all(16),
@@ -51,42 +51,12 @@ class RestaurantPage extends StatelessWidget {
               itemCount: restaurant.menu.length,
               itemBuilder: (context, index) {
                 final category = restaurant.menu[index];
-                return GestureDetector(
-                  onTap: () {
-                    // عند الضغط على الصنف، يتم الانتقال إلى صفحة الأصناف الخاصة به
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => CategoryItemsPage(
-                              categoryName: category,
-                              restaurantId: restaurant.id,
-                            ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.orange[50],
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 6,
-                          offset: Offset(2, 2),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        category,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                final icon = getCategoryIcon(category);  // استدعاء دالة الأيقونة
+
+                return CategoryCard(
+                  icon: icon,
+                  label: category,
+                  restaurantId: restaurant.id,  // تمرير معرف المطعم
                 );
               },
             ),
@@ -95,23 +65,15 @@ class RestaurantPage extends StatelessWidget {
       ),
     );
   }
-}
 
-// Widget لعرض الأيقونات (الهاتف والعنوان)
-class IconRow extends StatelessWidget {
-  final IconData icon;
-  final String text;
-
-  const IconRow({required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors.orange),
-        SizedBox(width: 8),
-        Expanded(child: Text(text, style: TextStyle(fontSize: 16))),
-      ],
-    );
+  // دالة لاختيار الأيقونة حسب الصنف
+  IconData getCategoryIcon(String category) {
+    final lower = category.toLowerCase();
+    if (lower.contains("مشروب")) return Icons.local_drink;
+    if (lower.contains("حلويات")) return Icons.cake;
+    if (lower.contains("وجبات") || lower.contains("مأكولات")) return Icons.fastfood;
+    if (lower.contains("فطور")) return Icons.breakfast_dining;
+    if (lower.contains("سندويش")) return Icons.lunch_dining;
+    return Icons.restaurant_menu;
   }
 }

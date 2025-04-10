@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'qr_scan_page.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:palette_generator/palette_generator.dart';
 import '../widgets/auto_scroll_image_strip.dart';
 import 'dart:math';
 
