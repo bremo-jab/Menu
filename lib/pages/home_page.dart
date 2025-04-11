@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'qr_scan_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../widgets/auto_scroll_image_strip.dart';
+import 'qr_scan_page.dart';
+import 'restaurants_list_page.dart';
+import 'login_page.dart'; // ← استيراد صفحة تسجيل الدخول
 import 'dart:math';
 
 class MenuHomePage extends StatefulWidget {
@@ -18,6 +20,7 @@ class _MenuHomePageState extends State<MenuHomePage>
   String? coverImageUrl;
   List<Color> buttonColors = [Colors.orange, Colors.red, Colors.blue];
   Random random = Random();
+  int _selectedIndex = 0;
 
   List<String> titles = [
     "اختيارات فريق مينيو لناس يميزها الذوق",
@@ -31,6 +34,8 @@ class _MenuHomePageState extends State<MenuHomePage>
   late Color qrColor;
   late Color textColor;
   late Color borderColor;
+  late Color bottomBarColor;
+  late Color iconColor;
 
   @override
   void initState() {
@@ -47,6 +52,8 @@ class _MenuHomePageState extends State<MenuHomePage>
     _getCoverImage();
     _randomizeTitleAndBorderColor();
     _initializeColors();
+    _randomizeBottomBarColor();
+    _determineIconColor();
   }
 
   void _randomizeTitleAndBorderColor() {
@@ -59,6 +66,33 @@ class _MenuHomePageState extends State<MenuHomePage>
     qrColor = getRandomDarkColor();
     textColor = getRandomDarkColor();
     borderColor = getRandomLightTransparentColor();
+  }
+
+  void _randomizeBottomBarColor() {
+    bottomBarColor = getRandomDarkColor();
+  }
+
+  void _determineIconColor() {
+    iconColor =
+        bottomBarColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+  }
+
+  void _onItemTapped(int index) {
+    if (index == 0) {
+      setState(() {
+        _selectedIndex = 0;
+      });
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RestaurantsListPage()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
   }
 
   @override
@@ -112,12 +146,11 @@ class _MenuHomePageState extends State<MenuHomePage>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final coverImageHeight = screenHeight * 0.30;
-    final qrHeight = screenHeight * 0.30;
-    final spacingBetweenCoverAndQR = screenHeight * 0.05;
+    final coverImageHeight = screenHeight * 0.25;
+    final qrHeight = screenHeight * 0.20;
+    final spacingBetweenCoverAndQR = screenHeight * 0.03;
     final spacingBetweenQRAndTitle = screenHeight * 0.05;
-    final titleHeight = screenHeight * 0.30 * 0.25;
-    final scrollingStripHeight = screenHeight * 0.30 * 0.75;
+    final scrollingStripHeight = screenHeight * 0.15;
 
     return Scaffold(
       body: Stack(
@@ -132,7 +165,7 @@ class _MenuHomePageState extends State<MenuHomePage>
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: CachedNetworkImageProvider(coverImageUrl!),
-                          fit: BoxFit.fill, ////////////////
+                          fit: BoxFit.fill,
                         ),
                       ),
                     )
@@ -141,7 +174,6 @@ class _MenuHomePageState extends State<MenuHomePage>
               ],
             ),
           ),
-
           Align(
             alignment: Alignment.center,
             child: GestureDetector(
@@ -214,7 +246,6 @@ class _MenuHomePageState extends State<MenuHomePage>
               ),
             ),
           ),
-
           Align(
             alignment: Alignment.bottomCenter,
             child: Column(
@@ -244,6 +275,27 @@ class _MenuHomePageState extends State<MenuHomePage>
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        backgroundColor: bottomBarColor,
+        selectedItemColor: iconColor,
+        unselectedItemColor: iconColor.withOpacity(0.6),
+        onTap: _onItemTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'الصفحة الرئيسية',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_restaurant_sharp),
+            label: 'قائمة المطاعم',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_sharp),
+            label: 'تسجيل الدخول',
           ),
         ],
       ),
